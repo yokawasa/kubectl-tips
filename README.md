@@ -191,14 +191,14 @@ kubectl exec -n <namespace> -it <pod-name> -- /bin/sh
 kubectl exec -n <namespace> -it <pod-name> -c <container-name> -- /bin/sh
 ```
 
-> NOTE:
-> You can change `kind` of the resource you're creating with option in `kubectl run`.
-> | kind | option |
-> | --- | --- |
-> | deployment | none |
-> | pod        | --restart=Never |
-> | job        | --restart=OnFailure |
-> | cronjob    | --schedule='cron format(0/5 * * * ?' |
+You can change `kind` of the resource you're creating with option in `kubectl run`
+
+| Kind      | Option |
+| ----------- | ----------- |
+| deployment  | node       |
+| pod         | `--restart=Never` |
+| job         | `--restart=OnFailure` |
+| cronjob     | `--schedule='cron format(0/5 * * * ?'` |
 
 
 ## Port forward a local port to a port on k8s resources
