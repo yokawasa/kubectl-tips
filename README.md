@@ -6,6 +6,7 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
 - [kubectl-tips](#kubectl-tips)
     - [Print the supported API resources](#print-the-supported-api-resources)
     - [Print the available API versions](#print-the-available-api-versions)
+    - [Deploy and rollback app using kubectl](#deploy-and-rollback-app-using-kubectl)
     - [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
     - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
     - [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
@@ -134,6 +135,45 @@ v2beta2.autoscaling                    Local     True        97d
 </details>
 
 
+
+## Deploy and rollback app using kubectl
+```bash
+kubectl run nginx --image nginx
+kubectl run nginx --image=nginx --port=80 --restart=Never
+kubectl expose deployment nginx --external-ip="10.0.47.10" --port=8000 --target-port=80
+kubectl scale --replicas=3 deployment nginx
+kubectl set image deployment nginx nginx=nginx:1.8
+kubectl rollout status deploy nginx
+kubectl set image deployment nginx nginx=nginx:1.9
+kubectl rollout status deploy nginx
+kubectl rollout history deploy nginx
+```
+
+Let's check rollout history
+```bash
+kubectl rollout history deploy nginx
+
+deployment.extensions/nginx
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+```
+
+You can undo the rollout of nginx deploy like this:
+```bash
+kubectl rollout undo deploy nginx
+kubectl describe deploy nginx |grep Image
+    Image:        nginx:1.8
+```
+
+More specifically you can undo the rollout with `--to-revision` option
+```bash
+kubectl rollout undo deploy nginx --to-revision=1
+kubectl describe deploy nginx |grep Image
+    Image:        nginx
+```
+
 ## Get all endpoints in the cluster
 ```bash
 kubectl get endpoints [-A|-n <namespace>]
@@ -182,7 +222,7 @@ kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}
 
 ## Delete a worker node in the cluster
 
-A point is to `cordon` a node and evict pods in the node with `drain`.
+A point is to `cordon` a node at first, then to evict pods in the node with `drain`.
 ```bash
 kubectl get nodes  # to get nodename to delete
 kubectl cordon <node-name>
@@ -193,7 +233,7 @@ kubectl delete node <node-name>
 
 ## Evicted all pods in a node for investigation
 
-A point is to `cordon` a node and evict pods in the node with `drain`, and `uncordon` after the investigation
+A point is to `cordon` a node at first, then to evict pods in the node with `drain`, to `uncordon` after the investigation
 ```bash
 kubectl get nodes  # to get nodename to delete
 kubectl cordon <node-name>
