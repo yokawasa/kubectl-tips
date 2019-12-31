@@ -4,19 +4,19 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
 <!-- TOC -->
 
 - [kubectl-tips](#kubectl-tips)
-        - [Print the supported API resources](#print-the-supported-api-resources)
-        - [Print the available API versions](#print-the-available-api-versions)
-        - [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
-        - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
-        - [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
-        - [Change the service type to LoadBalancer by patching](#change-the-service-type-to-loadbalancer-by-patching)
-        - [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
-        - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
+    - [Print the supported API resources](#print-the-supported-api-resources)
+    - [Print the available API versions](#print-the-available-api-versions)
+    - [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
+    - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
+    - [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
+    - [Change the service type to LoadBalancer by patching](#change-the-service-type-to-loadbalancer-by-patching)
+    - [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
+    - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
 
 <!-- /TOC -->
 
 
-### Print the supported API resources
+## Print the supported API resources
 
 ```bash
 kubectl api-resources
@@ -90,7 +90,7 @@ volumeattachments                                    storage.k8s.io             
 </p>
 </details>
 
-### Print the available API versions
+## Print the available API versions
 ```bash
 kubectl get apiservices
 ```
@@ -134,13 +134,13 @@ v2beta2.autoscaling                    Local     True        97d
 </details>
 
 
-### Get all endpoints in the cluster
+## Get all endpoints in the cluster
 ```bash
 kubectl get endpoints [-A|-n <namespace>]
 kubectl get ep [-A|-n <namespace>]
 ```
 
-### Execute shell commands inside the cluster
+## Execute shell commands inside the cluster
 You can exec shell commands in a new creating Pod
 ```bash
 kubectl run busybox --restart=Never -it --image=busybox --rm /bin/sh
@@ -161,7 +161,7 @@ kubectl exec -n <namespace> -it <pod-name> -c <container-name> -- /bin/sh
 > | cronjob    | --schedule='cron format(0/5 * * * ?' |
 
 
-### Port forward a local port to a port on k8s resources
+## Port forward a local port to a port on k8s resources
 
 ```bash
 # kubectl port-forward -n <namespace> <resource> LocalPort:TargetPort
@@ -173,14 +173,14 @@ kubectl port-forward -n <namespace> svc/redis-master 7000:6379
 ```
 See also [this](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) for more detail
 
-### Change the service type to LoadBalancer by patching 
+## Change the service type to LoadBalancer by patching 
 
 ```bash
 # kubectl patch svc SERVICE_NAME -p '{"spec": {"type": "LoadBalancer"}}'
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 ```
 
-### Delete a worker node in the cluster
+## Delete a worker node in the cluster
 
 A point is to `cordon` a node and evict pods in the node with `drain`.
 ```bash
@@ -191,7 +191,7 @@ kubectl delete node <node-name>
 ```
 > [NOTE] Add `--ignore-daemonsets` if you want to ignore DaemonSet for eviction
 
-### Evicted all pods in a node for investigation
+## Evicted all pods in a node for investigation
 
 A point is to `cordon` a node and evict pods in the node with `drain`, and `uncordon` after the investigation
 ```bash
