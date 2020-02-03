@@ -11,6 +11,7 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
     - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
     - [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
     - [Change the service type to LoadBalancer by patching](#change-the-service-type-to-loadbalancer-by-patching)
+    - [Delete Resources](#delete-resources)
     - [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
     - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
 
@@ -218,6 +219,25 @@ See also [this](https://kubernetes.io/docs/tasks/access-application-cluster/port
 ```bash
 # kubectl patch svc SERVICE_NAME -p '{"spec": {"type": "LoadBalancer"}}'
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+```
+
+## Delete Resources
+
+```bash
+# Delete resources that has name=<label> label
+kubectl delete svc,cm,secrets,deploy -l name=<label> -n <namespace>
+# Delete all resources
+kubectl delete svc,cm,secrets,deploy --all -n <namespace>
+
+# Delete pods in namespace <namespace>
+for pod in $(kubectl get po -n <namespace> --no-headers=true | cut -d ' ' -f 1); do
+  kubectl delete pod $pod -n <namespace>
+done
+
+# Delete pods with --grace-period=0 and --force option
+#    Add --grace-period=0 in order to delete pod as quickly as possible
+#    Add --force in case that pod stay terminating state and cannnot be deleted
+kubectl delete pod <pod> -n <namespace> --grace-period=0 --force
 ```
 
 ## Delete a worker node in the cluster
