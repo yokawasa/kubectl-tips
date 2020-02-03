@@ -11,7 +11,7 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
     - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
     - [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
     - [Change the service type to LoadBalancer by patching](#change-the-service-type-to-loadbalancer-by-patching)
-    - [Delete Resources](#delete-resources)
+    - [Delete Kubernetes Resources](#delete-kubernetes-resources)
     - [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
     - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
 
@@ -221,7 +221,7 @@ See also [this](https://kubernetes.io/docs/tasks/access-application-cluster/port
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 ```
 
-## Delete Resources
+## Delete Kubernetes Resources
 
 ```bash
 # Delete resources that has name=<label> label
