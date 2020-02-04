@@ -6,6 +6,7 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
 - [kubectl-tips](#kubectl-tips)
     - [Print the supported API resources](#print-the-supported-api-resources)
     - [Print the available API versions](#print-the-available-api-versions)
+    - [Display Resource (CPU/Memory) usage of nodes/pods](#display-resource-cpumemory-usage-of-nodespods)
     - [Deploy and rollback app using kubectl](#deploy-and-rollback-app-using-kubectl)
     - [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
     - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
@@ -135,6 +136,68 @@ v2beta2.autoscaling                    Local     True        97d
 </p>
 </details>
 
+
+## Display Resource (CPU/Memory) usage of nodes/pods
+
+
+Display Resource (CPU/Memory) usage of nodes
+```bash
+kubectl top node
+```
+
+<details><summary>sample output</summary>
+<p>
+
+```
+NAME                          CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+aks-node-28537427-0           281m         1%     10989Mi         39%
+aks-node-28537427-1           123m         0%     6795Mi          24%
+aks-node-28537427-2           234m         1%     7963Mi          28%
+```
+</p>
+</details>
+
+
+Display Resource (CPU/Memory) usage of pods
+```bash
+kubectl top po -A
+kubectl top po --all-namespaces
+```
+
+<details><summary>sample output</summary>
+<p>
+
+```
+NAMESPACE                   NAME                                           CPU(cores)   MEMORY(bytes)
+dd-agent                    dd-agent-2nffb                                 55m          235Mi
+dd-agent                    dd-agent-kkxsq                                 26m          208Mi
+dd-agent                    dd-agent-srnlt                                 29m          210Mi
+kube-system                 azure-cni-networkmonitor-5k7ws                 1m           22Mi
+kube-system                 azure-cni-networkmonitor-72sxx                 1m           20Mi
+kube-system                 azure-cni-networkmonitor-wxqvm                 1m           22Mi
+kube-system                 azure-ip-masq-agent-gft8h                      1m           11Mi
+kube-system                 azure-ip-masq-agent-tc8jc                      1m           10Mi
+kube-system                 azure-ip-masq-agent-v54pm                      1m           11Mi
+kube-system                 coredns-6cb457974f-kth9q                       4m           25Mi
+kube-system                 coredns-6cb457974f-m9lth                       4m           24Mi
+kube-system                 coredns-autoscaler-66cdbfb8fc-9kklp            1m           11Mi
+kube-system                 kube-proxy-b4x7q                               5m           47Mi
+kube-system                 kube-proxy-gm8df                               6m           49Mi
+kube-system                 kube-proxy-vsgbs                               5m           50Mi
+kube-system                 kubernetes-dashboard-686c6f85dc-n5xgg          1m           19Mi
+kube-system                 metrics-server-5b9794db67-5rs25                1m           18Mi
+kube-system                 tunnelfront-f586b8b5c-lrfkm                    68m          52Mi
+custom-app-00-dev1          custom-app-deployment-5db9d949dd-fnrqd         2m           1563Mi
+custom-app-00-dev2          custom-app-deployment-c67497d95-rtggx          2m           1577Mi
+custom-app-00-dev3          custom-app-deployment-958c59798-6vvwj          2m           1581Mi
+custom-app-00-dev4          custom-app-deployment-5c7797bc85-mlppp         2m           1585Mi
+custom-app-00-dev5          custom-app-deployment-bfd4596dd-d5q76          2m           1603Mi
+custom-app-00-dev6          custom-app-deployment-6f9f56ffc6-tpngg         2m           1600Mi
+custom-app-00-dev7          custom-app-deployment-7c6896ff98-4pmln         2m           1573Mi
+```
+
+</p>
+</details>
 
 
 ## Deploy and rollback app using kubectl
