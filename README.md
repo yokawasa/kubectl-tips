@@ -15,6 +15,8 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
     - [Delete Kubernetes Resources](#delete-kubernetes-resources)
     - [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
     - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
+    - [Get Pods Logs](#get-pods-logs)
+    - [Get Kubernetes events](#get-kubernetes-events)
 
 <!-- /TOC -->
 
@@ -247,8 +249,17 @@ kubectl get ep [-A|-n <namespace>]
 ## Execute shell commands inside the cluster
 You can exec shell commands in a new creating Pod
 ```bash
-kubectl run busybox --restart=Never -it --image=busybox --rm /bin/sh
+kubectl run --generator=run-pod/v1 -it busybox --image=busybox --rm --restart=Never -- sh
 ```
+If you want to run `curl` from a pod (The busybox image above doesn't contain curl)
+```bash
+kubectl run --generator=run-pod/v1 -it --rm busybox --image=radial/busyboxplus:curl --restart=Never -- sh
+```
+If you want to debug databases connections from a pod
+```bash
+kubectl run mysql -it --rm --image=mysql -- mysql -h <host/ip> -P <port> -u <user> -p<password>
+```
+
 You can also exec shell commands in existing Pod
 ```bash
 kubectl exec -n <namespace> -it <pod-name> -- /bin/sh
@@ -328,3 +339,41 @@ kubectl uncordon <node-name>
 ```
 > [NOTE] Add `--ignore-daemonsets` if you want to ignore DaemonSet for eviction
 
+## Get Pods Logs
+You can get Kubernetes pods logs by running the following commands
+```bash
+kubectl logs <pod-name> -n <namespace>
+
+# Add -f option if the logs should be streamed
+kubectl logs <pod-name> -n <namespace> -f 
+```
+
+Or you can use 3rd party OSS tools. For example, you can get `stern` that allows you to aggregate logs of all pods and to filter them by using regular expression like `stern <expression>`
+```bash
+stern <keyword> -n <namespace>
+```
+
+## Get Kubernetes events 
+
+You can Pods' events with the following commands which will show events at the end of the output for the pod (Relatively recent events will appear).
+
+```bash
+kubectl describe pod <podname> -n <namespace>
+```
+
+```bash
+# Get recent events in a specific namespace
+kubectl get events -n <namespaces>
+kubectl get events -n kube-system
+
+# Get recent events for all resources in the system
+kubectl get event --all-namespaces
+kubectl get event --all-namespaces -o wide
+
+# No Pod events
+kubectl get events --field-selector involvedObject.kind!=Pod
+# Events from a specific Pod
+kubectl get events --field-selector involvedObject.kind=Pod,involvedObject.name=<podname>
+# Events from a specific Node
+kubectl get events --field-selector involvedObject.kind=Node,involvedObject.name=<nodename>
+```
