@@ -7,6 +7,7 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
     - [Print the supported API resources](#print-the-supported-api-resources)
     - [Print the available API versions](#print-the-available-api-versions)
     - [Display Resource (CPU/Memory) usage of nodes/pods](#display-resource-cpumemory-usage-of-nodespods)
+    - [Updating Kubernetes Deployments on a ConfigMap/Secrets Change](#updating-kubernetes-deployments-on-a-configmapsecrets-change)
     - [Deploy and rollback app using kubectl](#deploy-and-rollback-app-using-kubectl)
     - [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
     - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
@@ -200,6 +201,16 @@ custom-app-00-dev7          custom-app-deployment-7c6896ff98-4pmln         2m   
 
 </p>
 </details>
+
+
+## Updating Kubernetes Deployments on a ConfigMap/Secrets Change
+
+`kubectl v1.15+` provides a rollout restart command that allows you to restart Pods in a Deployment and allow them pick up changes to a referenced ConfigMap, Secret or similar.
+
+```bash
+kubectl rollout restart deploy/<deployment-name>
+kubectl rollout restart deploy <deployment-name>
+```
 
 
 ## Deploy and rollback app using kubectl
