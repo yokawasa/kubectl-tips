@@ -439,7 +439,7 @@ workqueue_work_duration_seconds_sum{name="non_structural_schema_condition_contro
 
 ## Get Kubernetes Raw Metrics - metrics API
 
-You can access [Metrics API](https://github.com/feiskyer/kubernetes-handbook/blob/master/en/addons/metrics.md#metrics-api) via kubectl proxy like this:
+You can access [Metrics API](https://github.com/kubernetes/metrics) via kubectl proxy like this:
 
 ```
 kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes
@@ -447,7 +447,9 @@ kubectl get --raw /apis/metrics.k8s.io/v1beta1/pods
 kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes/<node-name>
 kubectl get --raw /apis/metrics.k8s.io/v1beta1/namespaces/<namespace-name>/pods/<pod-name>
 ```
-> Outputs are unformated JSON. It's good to use `jq` to parse it.
+(ref: [feiskyer/kubernetes-handbook](https://github.com/feiskyer/kubernetes-handbook/blob/master/en/addons/metrics.md#metrics-api))
+
+Outputs are unformated JSON. It's good to use `jq` to parse it.
 
 <details><summary>sample output -  /apis/metrics.k8s.io/v1beta1/nodes</summary>
 <p>
