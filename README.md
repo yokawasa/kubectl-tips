@@ -18,7 +18,7 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
     - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
     - [Get Pods Logs](#get-pods-logs)
     - [Get Kubernetes events](#get-kubernetes-events)
-    - [Get Kubernetes Raw Metrics - kube-state-metrics](#get-kubernetes-raw-metrics---kube-state-metrics)
+    - [Get Kubernetes Raw Metrics - Prometheus metrics endpoint](#get-kubernetes-raw-metrics---prometheus-metrics-endpoint)
     - [Get Kubernetes Raw Metrics - metrics API](#get-kubernetes-raw-metrics---metrics-api)
 
 <!-- /TOC -->
@@ -391,9 +391,9 @@ kubectl get events --field-selector involvedObject.kind=Pod,involvedObject.name=
 kubectl get events --field-selector involvedObject.kind=Node,involvedObject.name=<nodename>
 ```
 
-## Get Kubernetes Raw Metrics - kube-state-metrics
+## Get Kubernetes Raw Metrics - Prometheus metrics endpoint
 
-[kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) is a simple service that listens to the Kubernetes API server and generates metrics about the state of the objects. kube-state-metrics' metrics are exported on the HTTP endpoint `/metrics`. These metrics are in [Prometheus format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md).
+Many Kubernetes components exposes their metrics via the `/metrics` endpoint, including API server, etcd and many other add-ons. These metrics are in [Prometheus format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md), and can be defined and exposed using [Prometheus client libs](https://prometheus.io/docs/instrumenting/clientlibs/)
 
 ```
 kubectl get --raw /metrics
