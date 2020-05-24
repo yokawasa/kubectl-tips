@@ -18,6 +18,8 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
     - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
     - [Get Pods Logs](#get-pods-logs)
     - [Get Kubernetes events](#get-kubernetes-events)
+    - [Get Kubernetes Raw Metrics - kube-state-metrics](#get-kubernetes-raw-metrics---kube-state-metrics)
+    - [Get Kubernetes Raw Metrics - metrics API](#get-kubernetes-raw-metrics---metrics-api)
 
 <!-- /TOC -->
 
@@ -223,7 +225,7 @@ kubectl set image deployment nginx nginx=nginx:1.8
 kubectl rollout status deploy nginx
 kubectl set image deployment nginx nginx=nginx:1.9
 kubectl rollout status deploy nginx
-kubectl rollout history deploy nginx
+kubectl rollout history deploy nginkubectl get --raw /metricsx
 ```
 
 Let's check rollout history
@@ -388,3 +390,142 @@ kubectl get events --field-selector involvedObject.kind=Pod,involvedObject.name=
 # Events from a specific Node
 kubectl get events --field-selector involvedObject.kind=Node,involvedObject.name=<nodename>
 ```
+
+## Get Kubernetes Raw Metrics - kube-state-metrics
+
+[kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) is a simple service that listens to the Kubernetes API server and generates metrics about the state of the objects. kube-state-metrics' metrics are exported on the HTTP endpoint `/metrics`. These metrics are in [Prometheus format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md).
+
+```
+kubectl get --raw /metrics
+```
+
+<details><summary>sample output</summary>
+<p>
+
+```
+APIServiceOpenAPIAggregationControllerQueue1_adds 282663
+APIServiceOpenAPIAggregationControllerQueue1_depth 0
+APIServiceOpenAPIAggregationControllerQueue1_longest_running_processor_microseconds 0
+APIServiceOpenAPIAggregationControllerQueue1_queue_latency{quantile="0.5"} 63
+APIServiceOpenAPIAggregationControllerQueue1_queue_latency{quantile="0.9"} 105
+APIServiceOpenAPIAggregationControllerQueue1_queue_latency{quantile="0.99"} 126
+APIServiceOpenAPIAggregationControllerQueue1_queue_latency_sum 1.4331448e+07
+APIServiceOpenAPIAggregationControllerQueue1_queue_latency_count 282663
+APIServiceOpenAPIAggregationControllerQueue1_retries 282861
+APIServiceOpenAPIAggregationControllerQueue1_unfinished_work_seconds 0
+APIServiceOpenAPIAggregationControllerQueue1_work_duration{quantile="0.5"} 59
+APIServiceOpenAPIAggregationControllerQueue1_work_duration{quantile="0.9"} 98
+APIServiceOpenAPIAggregationControllerQueue1_work_duration{quantile="0.99"} 2003
+APIServiceOpenAPIAggregationControllerQueue1_work_duration_sum 2.1373689e+07
+APIServiceOpenAPIAggregationControllerQueue1_work_duration_count 282663
+...
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="1e-08"} 0
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="1e-07"} 0
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="1e-06"} 0
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="9.999999999999999e-06"} 459
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="9.999999999999999e-05"} 473
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="0.001"} 924
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="0.01"} 927
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="0.1"} 928
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="1"} 928
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="10"} 928
+workqueue_work_duration_seconds_bucket{name="non_structural_schema_condition_controller",le="+Inf"} 928
+workqueue_work_duration_seconds_sum{name="non_structural_schema_condition_controller"} 0.09712353499999991
+...
+```
+</p>
+</details>
+
+
+## Get Kubernetes Raw Metrics - metrics API
+
+You can access [Metrics API](https://github.com/feiskyer/kubernetes-handbook/blob/master/en/addons/metrics.md#metrics-api) via kubectl proxy like this:
+
+```
+kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes
+kubectl get --raw /apis/metrics.k8s.io/v1beta1/pods
+kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes/<node-name>
+kubectl get --raw /apis/metrics.k8s.io/v1beta1/namespaces/<namespace-name>/pods/<pod-name>
+```
+> Outputs are unformated JSON. It's good to use `jq` to parse it.
+
+<details><summary>sample output -  /apis/metrics.k8s.io/v1beta1/nodes</summary>
+<p>
+
+```json
+kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes | jq
+
+{
+  "kind": "NodeMetricsList",
+  "apiVersion": "metrics.k8s.io/v1beta1",
+  "metadata": {
+    "selfLink": "/apis/metrics.k8s.io/v1beta1/nodes"
+  },
+  "items": [
+    {
+      "metadata": {
+        "name": "ip-xxxxxxxxxx.ap-northeast-1.compute.internal",
+        "selfLink": "/apis/metrics.k8s.io/v1beta1/nodes/ip-xxxxxxxxxx.ap-northeast-1.compute.internal",
+        "creationTimestamp": "2020-05-24T01:29:05Z"
+      },
+      "timestamp": "2020-05-24T01:28:58Z",
+      "window": "30s",
+      "usage": {
+        "cpu": "105698348n",
+        "memory": "819184Ki"
+      }
+    },
+    {
+      "metadata": {
+        "name": "ip-yyyyyyyyyy.ap-northeast-1.compute.internal",
+        "selfLink": "/apis/metrics.k8s.io/v1beta1/nodes/ip-yyyyyyyyyy.ap-northeast-1.compute.internal",
+        "creationTimestamp": "2020-05-24T01:29:05Z"
+      },
+      "timestamp": "2020-05-24T01:29:01Z",
+      "window": "30s",
+      "usage": {
+        "cpu": "71606060n",
+        "memory": "678944Ki"
+      }
+    }
+  ]
+}
+
+```
+
+</p>
+</details>
+
+
+<details><summary>sample output - /apis/metrics.k8s.io/v1beta1/namespaces/NAMESPACE/pods/PODNAME </summary>
+<p>
+
+```json
+kubectl get --raw /apis/metrics.k8s.io/v1beta1/namespaces/kube-system/pods/cluster-autoscaler-7d8d69668c-5rcmt | jq
+
+{
+  "kind": "PodMetrics",
+  "apiVersion": "metrics.k8s.io/v1beta1",
+  "metadata": {
+    "name": "cluster-autoscaler-7d8d69668c-5rcmt",
+    "namespace": "kube-system",
+    "selfLink": "/apis/metrics.k8s.io/v1beta1/namespaces/kube-system/pods/cluster-autoscaler-7d8d69668c-5rcmt",
+    "creationTimestamp": "2020-05-24T01:33:17Z"
+  },
+  "timestamp": "2020-05-24T01:32:58Z",
+  "window": "30s",
+  "containers": [
+    {
+      "name": "cluster-autoscaler",
+      "usage": {
+        "cpu": "1030416n",
+        "memory": "27784Ki"
+      }
+    }
+  ]
+}
+
+```
+</p>
+</details>
+
