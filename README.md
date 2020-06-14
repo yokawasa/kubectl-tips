@@ -380,8 +380,10 @@ kubectl get events -n <namespaces>
 kubectl get events -n kube-system
 
 # Get recent events for all resources in the system
+# Get events from all namespaces with either --all-namespaces or -A 
 kubectl get event --all-namespaces
-kubectl get event --all-namespaces -o wide
+kubectl get event -A
+kubectl get event -A -o wide
 
 # No Pod events
 kubectl get events --field-selector involvedObject.kind!=Pod
@@ -389,6 +391,11 @@ kubectl get events --field-selector involvedObject.kind!=Pod
 kubectl get events --field-selector involvedObject.kind=Pod,involvedObject.name=<podname>
 # Events from a specific Node
 kubectl get events --field-selector involvedObject.kind=Node,involvedObject.name=<nodename>
+
+# Warning events (from all namespaces)
+kubectl get events --field-selector type=Warning -A
+# NOT normal events (from all namespaces)
+kubectl get events --field-selector type!=Normal -A
 ```
 
 ## Get Kubernetes Raw Metrics - Prometheus metrics endpoint
