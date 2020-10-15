@@ -4,22 +4,22 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
 <!-- TOC -->
 
 - [kubectl-tips](#kubectl-tips)
-    - [Print the supported API resources](#print-the-supported-api-resources)
-    - [Print the available API versions](#print-the-available-api-versions)
-    - [Display Resource (CPU/Memory) usage of nodes/pods](#display-resource-cpumemory-usage-of-nodespods)
-    - [Updating Kubernetes Deployments on a ConfigMap/Secrets Change](#updating-kubernetes-deployments-on-a-configmapsecrets-change)
-    - [Deploy and rollback app using kubectl](#deploy-and-rollback-app-using-kubectl)
-    - [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
-    - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
-    - [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
-    - [Change the service type to LoadBalancer by patching](#change-the-service-type-to-loadbalancer-by-patching)
-    - [Delete Kubernetes Resources](#delete-kubernetes-resources)
-    - [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
-    - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
-    - [Get Pods Logs](#get-pods-logs)
-    - [Get Kubernetes events](#get-kubernetes-events)
-    - [Get Kubernetes Raw Metrics - Prometheus metrics endpoint](#get-kubernetes-raw-metrics---prometheus-metrics-endpoint)
-    - [Get Kubernetes Raw Metrics - metrics API](#get-kubernetes-raw-metrics---metrics-api)
+  - [Print the supported API resources](#print-the-supported-api-resources)
+  - [Print the available API versions](#print-the-available-api-versions)
+  - [Display Resource (CPU/Memory) usage of nodes/pods](#display-resource-cpumemory-usage-of-nodespods)
+  - [Updating Kubernetes Deployments on a ConfigMap/Secrets Change](#updating-kubernetes-deployments-on-a-configmapsecrets-change)
+  - [Deploy and rollback app using kubectl](#deploy-and-rollback-app-using-kubectl)
+  - [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
+  - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
+  - [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
+  - [Change the service type to LoadBalancer by patching](#change-the-service-type-to-loadbalancer-by-patching)
+  - [Delete Kubernetes Resources](#delete-kubernetes-resources)
+  - [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
+  - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
+  - [Get Pods Logs](#get-pods-logs)
+  - [Get Kubernetes events](#get-kubernetes-events)
+  - [Get Kubernetes Raw Metrics - Prometheus metrics endpoint](#get-kubernetes-raw-metrics---prometheus-metrics-endpoint)
+  - [Get Kubernetes Raw Metrics - metrics API](#get-kubernetes-raw-metrics---metrics-api)
 
 <!-- /TOC -->
 
@@ -359,6 +359,7 @@ kubectl logs <pod-name> -n <namespace>
 
 # Add -f option if the logs should be streamed
 kubectl logs <pod-name> -n <namespace> -f 
+kubectl logs <pod-name> -n <namespace> -f --tail 0
 ```
 
 Or you can use 3rd party OSS tools. For example, you can get `stern` that allows you to aggregate logs of all pods and to filter them by using regular expression like `stern <expression>`
