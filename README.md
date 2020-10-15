@@ -4,22 +4,23 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
 <!-- TOC -->
 
 - [kubectl-tips](#kubectl-tips)
-  - [Print the supported API resources](#print-the-supported-api-resources)
-  - [Print the available API versions](#print-the-available-api-versions)
-  - [Display Resource (CPU/Memory) usage of nodes/pods](#display-resource-cpumemory-usage-of-nodespods)
-  - [Updating Kubernetes Deployments on a ConfigMap/Secrets Change](#updating-kubernetes-deployments-on-a-configmapsecrets-change)
-  - [Deploy and rollback app using kubectl](#deploy-and-rollback-app-using-kubectl)
-  - [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
-  - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
-  - [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
-  - [Change the service type to LoadBalancer by patching](#change-the-service-type-to-loadbalancer-by-patching)
-  - [Delete Kubernetes Resources](#delete-kubernetes-resources)
-  - [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
-  - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
-  - [Get Pods Logs](#get-pods-logs)
-  - [Get Kubernetes events](#get-kubernetes-events)
-  - [Get Kubernetes Raw Metrics - Prometheus metrics endpoint](#get-kubernetes-raw-metrics---prometheus-metrics-endpoint)
-  - [Get Kubernetes Raw Metrics - metrics API](#get-kubernetes-raw-metrics---metrics-api)
+    - [Print the supported API resources](#print-the-supported-api-resources)
+    - [Print the available API versions](#print-the-available-api-versions)
+    - [Display Resource (CPU/Memory) usage of nodes/pods](#display-resource-cpumemory-usage-of-nodespods)
+    - [Updating Kubernetes Deployments on a ConfigMap/Secrets Change](#updating-kubernetes-deployments-on-a-configmapsecrets-change)
+    - [Deploy and rollback app using kubectl](#deploy-and-rollback-app-using-kubectl)
+    - [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
+    - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
+    - [Access k8s API endpoint via local proxy](#access-k8s-api-endpoint-via-local-proxy)
+    - [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
+    - [Change the service type to LoadBalancer by patching](#change-the-service-type-to-loadbalancer-by-patching)
+    - [Delete Kubernetes Resources](#delete-kubernetes-resources)
+    - [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
+    - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
+    - [Get Pods Logs](#get-pods-logs)
+    - [Get Kubernetes events](#get-kubernetes-events)
+    - [Get Kubernetes Raw Metrics - Prometheus metrics endpoint](#get-kubernetes-raw-metrics---prometheus-metrics-endpoint)
+    - [Get Kubernetes Raw Metrics - metrics API](#get-kubernetes-raw-metrics---metrics-api)
 
 <!-- /TOC -->
 
@@ -288,6 +289,35 @@ You can change `kind` of the resource you're creating with option in `kubectl ru
 | job         | `--restart=OnFailure` |
 | cronjob     | `--schedule='cron format(0/5 * * * ?'` |
 
+
+> NOTE: kubernetes 1.18+
+> kubectl run has removed previously deprecated flags not related to generator and pod creation. The kubectl run command now only creates pods. To create objects other than Pods, see the specific kubectl create subcommand.
+>  So run `kubectl create deployment` in order to create deployment like this:
+>```
+> kubectl create deployment nginx --image=nginx
+>kubectl create deployment nginx --image=nginx --dry-run -o yaml
+>```
+> see also [kubectl cheat sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
+
+
+## Access k8s API endpoint via local proxy
+
+You can access k8s API via local proxy
+```bash
+# Making local proxy
+kubectl proxy
+Starting to serve on 127.0.0.1:8001
+```
+
+Access k8s API resources via local proxy
+
+```bash
+# Get pods list in namespace foo
+curl http://localhost:8001/api/v1/namespaces/foo/pods
+# Access pod's endpoint
+curl http://localhost:8001/api/v1/namespaces/foo/pods/<pod-name>/proxy/<podendpoint>
+curl http://localhost:8001/api/v1/namespaces/foo/pods/foo-86c498d84c-xbkn9/proxy/healthcheck
+```
 
 ## Port forward a local port to a port on k8s resources
 
