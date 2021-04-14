@@ -343,8 +343,11 @@ kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}
 ```bash
 # Delete resources that has name=<label> label
 kubectl delete svc,cm,secrets,deploy -l name=<label> -n <namespace>
-# Delete all resources
+# Delete all certain resources from a certain namespace
+# --all is used to delete every object of that resource type instead of specifying it using its name or label.
 kubectl delete svc,cm,secrets,deploy --all -n <namespace>
+# Delete all resources (except crd) from a certain namespace
+kubectl delete all --all -n <namespace>
 
 # Delete pods in namespace <namespace>
 for pod in $(kubectl get po -n <namespace> --no-headers=true | cut -d ' ' -f 1); do
