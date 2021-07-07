@@ -4,26 +4,38 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
 <!-- TOC -->
 
 - [kubectl-tips](#kubectl-tips)
-    - [Print the supported API resources](#print-the-supported-api-resources)
-    - [Print the available API versions](#print-the-available-api-versions)
-    - [Display Resource (CPU/Memory) usage of nodes/pods](#display-resource-cpumemory-usage-of-nodespods)
-    - [Updating Kubernetes Deployments on a ConfigMap/Secrets Change](#updating-kubernetes-deployments-on-a-configmapsecrets-change)
-    - [Deploy and rollback app using kubectl](#deploy-and-rollback-app-using-kubectl)
-    - [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
-    - [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
-    - [Access k8s API endpoint via local proxy](#access-k8s-api-endpoint-via-local-proxy)
-    - [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
-    - [Change the service type to LoadBalancer by patching](#change-the-service-type-to-loadbalancer-by-patching)
-    - [Delete Kubernetes Resources](#delete-kubernetes-resources)
-    - [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
-    - [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
-    - [Get Pods Logs](#get-pods-logs)
-    - [Get Kubernetes events](#get-kubernetes-events)
-    - [Get Kubernetes Raw Metrics - Prometheus metrics endpoint](#get-kubernetes-raw-metrics---prometheus-metrics-endpoint)
-    - [Get Kubernetes Raw Metrics - metrics API](#get-kubernetes-raw-metrics---metrics-api)
+	- [Print Cluster Info](#print-cluster-info)
+	- [Print the supported API resources](#print-the-supported-api-resources)
+	- [Print the available API versions](#print-the-available-api-versions)
+	- [Display Resource (CPU/Memory) usage of nodes/pods](#display-resource-cpumemory-usage-of-nodespods)
+	- [Updating Kubernetes Deployments on a ConfigMap/Secrets Change](#updating-kubernetes-deployments-on-a-configmapsecrets-change)
+	- [Deploy and rollback app using kubectl](#deploy-and-rollback-app-using-kubectl)
+	- [Get all endpoints in the cluster](#get-all-endpoints-in-the-cluster)
+	- [Execute shell commands inside the cluster](#execute-shell-commands-inside-the-cluster)
+	- [Access k8s API endpoint via local proxy](#access-k8s-api-endpoint-via-local-proxy)
+	- [Port forward a local port to a port on k8s resources](#port-forward-a-local-port-to-a-port-on-k8s-resources)
+	- [Change the service type to LoadBalancer by patching](#change-the-service-type-to-loadbalancer-by-patching)
+	- [Delete Kubernetes Resources](#delete-kubernetes-resources)
+	- [Using finalizers to control deletion](#using-finalizers-to-control-deletion)
+	- [Delete a worker node in the cluster](#delete-a-worker-node-in-the-cluster)
+	- [Evicted all pods in a node for investigation](#evicted-all-pods-in-a-node-for-investigation)
+	- [Get Pods Logs](#get-pods-logs)
+	- [Get Kubernetes events](#get-kubernetes-events)
+	- [Get Kubernetes Raw Metrics - Prometheus metrics endpoint](#get-kubernetes-raw-metrics---prometheus-metrics-endpoint)
+	- [Get Kubernetes Raw Metrics - metrics API](#get-kubernetes-raw-metrics---metrics-api)
 
 <!-- /TOC -->
 
+
+## Print Cluster Info
+
+```bash
+kubectl cluster-info
+
+Kubernetes control plane is running at https://A8A4143BAA8FADD6BA355D6C2A12344.gr5.ap-northeast-1.eks.amazonaws.com
+CoreDNS is running at https://A8A4143BAA8FADD6BA355D6C2A12345.gr7.ap-northeast-1.eks.amazonaws.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Metrics-server is running at https://A8A4143BAA8FADD6BA355D6C2A12345.gr7.ap-northeast-1.eks.amazonaws.com/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy
+```
 
 ## Print the supported API resources
 
@@ -360,6 +372,22 @@ done
 kubectl delete pod <pod> -n <namespace> --grace-period=0 --force
 ```
 
+
+## Using finalizers to control deletion
+
+You can delete the k8s object by patching command to remove finalizers. Simply patch it on the command line to remove the finalizers, so the object will be deleted
+
+For example, you want to delete `configmap/mymap`
+```bash
+kubectl patch configmap/mymap \
+    --type json \
+    --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]'
+```
+
+![](https://d33wubrfki0l68.cloudfront.net/2921aff96caba07229c862903fea89cbab9ad5a6/8e8fd/images/blog/2021-05-14-using-finalizers-to-control-deletion/state-diagram-finalize.png)
+ref: https://kubernetes.io/blog/2021/05/14/using-finalizers-to-control-deletion/
+
+Read [Using Finalizers to Control Deletion](https://kubernetes.io/blog/2021/05/14/using-finalizers-to-control-deletion/) to understand how the object will be deleted by using finalizers
 ## Delete a worker node in the cluster
 
 A point is to `cordon` a node at first, then to evict pods in the node with `drain`.
