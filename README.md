@@ -4,6 +4,7 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
 <!-- TOC -->
 
 - [kubectl-tips](#kubectl-tips)
+	- [Kubectl Version Manager](#kubectl-version-manager)
 	- [Print Cluster Info](#print-cluster-info)
 	- [Print the supported API resources](#print-the-supported-api-resources)
 	- [Print the available API versions](#print-the-available-api-versions)
@@ -26,6 +27,57 @@ Tips on Kubernetes cluster management using kubectl command. A goal of this repo
 
 <!-- /TOC -->
 
+
+## Kubectl Version Manager
+
+You can manager multiple kubectl version with [asdf](https://asdf-vm.com/) and [asdf-kubectl](https://github.com/asdf-community/asdf-kubectl)
+
+Install asdf and asdf-kubectl
+
+```bash
+# Homebrew on macOS
+# Install asdf
+brew install asdf
+# Add asdf.sh to your ~/.zshrc
+echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh" >> ~/.zshrc
+```
+
+Install asdf-kubectl
+
+```bash
+# Install asdf-kubectl plugin
+asdf plugin-add kubectl https://github.com/asdf-community/asdf-kubectl.git
+# check installed plugin
+asdf plugin list
+# -> kubectl
+```
+
+Then, check available version
+
+```bash
+asdf list-all kubectl
+```
+
+Let's install 1.21.14
+
+```bash
+asdf install kubectl 1.21.14
+# Check install kubectl version
+asdf list kubectl
+#-> *1.21.14
+```
+
+Finally configure asdf to use kubectl version 1.21.14
+
+```bash
+asdf global kubectl 1.21.14
+```
+
+
+See also
+- https://asdf-vm.com/
+- https://asdf-vm.com/guide/getting-started.html
+- https://github.com/asdf-community/asdf-kubectl
 
 ## Print Cluster Info
 
