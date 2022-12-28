@@ -73,6 +73,14 @@ Finally configure asdf to use kubectl version 1.21.14
 asdf global kubectl 1.21.14
 ```
 
+Let's see how kubectl client version looks like
+
+```bash
+kubectl version --client
+
+Client Version: version.Info{Major:"1", Minor:"21", GitVersion:"v1.21.14", GitCommit:"0f77da5bd4809927e15d1658fb4aa8f13ad890a5", GitTreeState:"clean", BuildDate:"2022-06-15T14:17:29Z", GoVersion:"go1.16.15", Compiler:"gc", Platform:"darwin/amd64"}
+```
+
 
 See also
 - https://asdf-vm.com/
